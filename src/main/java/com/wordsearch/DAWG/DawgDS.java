@@ -68,4 +68,33 @@ public class DawgDS implements Serializable{
         this.nodeCount = nodeCount;
     }
 
+    public void optimize() {
+        int totalRemoved = 0;
+        for (int i = WordSearch.getNodeEndings().size() - 1; i >= 0; i--) {
+            ArrayList<Node> nodeEndings = WordSearch.getNodeEndings().get(i);
+
+            System.out.println("**********************************************************************");
+            System.out.println("Optimizing for index " + i);
+            System.out.println("**********************************************************************");
+
+            for(int j = 0; j < nodeEndings.size() - 1; j++) {
+                Node one = nodeEndings.get(j);
+                for (int l = j + 1; l < nodeEndings.size(); l++) {
+                    Node two = nodeEndings.get(l);
+                    if(one.equals(two)) {
+                        Node oneParent = one.getParent();
+                        boolean removed = oneParent.removeChildNode(one.getValue());
+                        oneParent.getChildren().add(two);
+                        nodeCount--;
+                        totalRemoved++;
+                        System.out.println("Running total Nodes Removed Count: " + totalRemoved);
+                    }
+                }
+            }
+        }
+        System.out.println("**********************************************************************");
+        System.out.println("Total Nodes Removed " + totalRemoved);
+        System.out.println("**********************************************************************");
+    }
+
 }

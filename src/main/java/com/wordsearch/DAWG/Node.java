@@ -91,4 +91,38 @@ public class Node implements Serializable{
         }
         return null;
     }
+
+    public boolean removeChildNode(Character c) {
+//        System.out.println("Children Node size before remove: " + children.size());
+        ListIterator<Node> listIterator = children.listIterator();
+        while (listIterator.hasNext()) {
+            Node curr = listIterator.next();
+            if (c == curr.getValue()) {
+                listIterator.remove();
+//                System.out.println("Children Node size after renove: " + children.size());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Node node = (Node) o;
+
+        if (childrenCount != node.childrenCount) return false;
+        if (!value.equals(node.value)) return false;
+        return children != null ? children.equals(node.children) : node.children == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = value.hashCode();
+        result = 31 * result + (children != null ? children.hashCode() : 0);
+        result = 31 * result + childrenCount;
+        return result;
+    }
 }

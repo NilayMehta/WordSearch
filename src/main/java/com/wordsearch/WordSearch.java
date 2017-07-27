@@ -37,6 +37,9 @@ public class WordSearch {
         System.out.println("DURATION: " + (float) duration /1000 + " seconds");
         System.out.println("******************* LOADED NEW DICTIONARY *****************");
 
+        System.out.println("**********************************************************************");
+        System.out.println("**********************************************************************");
+        System.out.println("**********************************************************************");
         int runningNodeCount = 0;
         for(int i = 0; i < 15; i++) {
             System.out.println("For index " + i + " for each arraylist, there are " + nodeEndings.get(i).size() + " end nodes");
@@ -44,6 +47,25 @@ public class WordSearch {
         }
         System.out.println("Running Node Count: " + runningNodeCount);
         System.out.println("DAWG Node count: " + dawg.getNodeCount());
+        System.out.println("**********************************************************************");
+        System.out.println("**********************************************************************");
+        System.out.println("**********************************************************************");
+        System.out.println("**********************************************************************");
+        System.out.println("");
+        System.out.println("**********************************************************************");
+        System.out.println("**************** Starting Optimization of Structure *******************");
+        System.out.println("**********************************************************************");
+
+        startTime = System.currentTimeMillis();
+        dawg.optimize();
+        endTime = System.currentTimeMillis();
+        duration = (endTime - startTime);
+        System.out.println("DURATION: " + (float) duration /1000 + " seconds");
+        System.out.println("**********************************************************************");
+        System.out.println("**********************************************************************");
+        System.out.println("*********************** Optimized Structure **************************");
+        System.out.println("**********************************************************************");
+        System.out.println("**********************************************************************");
 
         System.out.println("The dawg contains the word can: " + dawg.checkWord("can", rootNode));
         System.out.println("The dawg contains the word card: " + dawg.checkWord("card", rootNode));
