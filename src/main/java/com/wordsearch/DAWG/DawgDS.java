@@ -1,5 +1,7 @@
 package com.wordsearch.DAWG;
 
+import com.wordsearch.WordSearch;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -26,6 +28,7 @@ public class DawgDS implements Serializable{
         if (word.length() == curr.getCharDepth()) {
             curr.setWord(true);
             nodeCount++;
+            WordSearch.getNodeEndings().get(word.length() - 1).add(curr);
             return;
         }
         char c = word.charAt(curr.getCharDepth());
