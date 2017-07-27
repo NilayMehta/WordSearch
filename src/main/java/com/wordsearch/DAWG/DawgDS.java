@@ -29,10 +29,12 @@ public class DawgDS implements Serializable{
             return;
         }
         char c = word.charAt(curr.getCharDepth());
-        if (curr.getChildren().get((int)c - (int)'a') == null) {
-            curr.getChildren().add((int)c - (int)'a', new Node(curr, c));
+        Node node = curr.getChildNode(c);
+        if (node == null) {
+            curr.getChildren().add(new Node(curr, c));
+            node = curr.getChildNode(c);
         }
-        addWord(word, curr.getChildren().get((int)c - (int)'a'));
+        addWord(word, node);
     }
 
     public boolean checkWord(String word, Node curr) {
@@ -40,13 +42,12 @@ public class DawgDS implements Serializable{
             return curr.isWord();
         }
         Character c = word.charAt(curr.getCharDepth());
-        if (!curr.getChildren().contains(c) || curr.getChildren().get((int)c - (int)'a') == null) {
+        Node node = curr.getChildNode(c);
+        if (node == null) {
             return false;
         }
-        return checkWord(word, curr.getChildren().get((int)c - (int)'a'));
+        return checkWord(word, node);
     }
-
-
 
     public Node getRootNode() {
         return rootNode;

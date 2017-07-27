@@ -1,9 +1,7 @@
 package com.wordsearch.DAWG;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Nilay on 7/26/2017.
@@ -81,11 +79,16 @@ public class Node implements Serializable{
         this.charDepth = charDepth;
     }
 
-    public Node getNode(Character c) {
-        int index = children.indexOf(c);
-        if (index == -1) {
-            return null;
+    public Node getChildNode(Character c) {
+        boolean found = false;
+        ListIterator<Node> listIterator = children.listIterator();
+        while (!found && listIterator.hasNext()) {
+            Node curr = listIterator.next();
+            if (c == curr.getValue()) {
+                found = true;
+                return curr;
+            }
         }
-        return children.get(index);
+        return null;
     }
 }
