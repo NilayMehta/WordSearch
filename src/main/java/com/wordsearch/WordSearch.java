@@ -13,6 +13,7 @@ public class WordSearch {
     private static Node rootNode;
     private static DawgDS dawg;
     public static void main(String[] args) {
+
         dawg = new DawgDS();
         rootNode = dawg.getRootNode();
         System.out.println("The dawg contains the word can: " + dawg.checkWord("can", rootNode));

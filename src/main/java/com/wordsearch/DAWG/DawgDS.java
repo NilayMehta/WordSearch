@@ -6,11 +6,12 @@ import java.util.ArrayList;
 /**
  * Created by Nilay on 7/26/2017.
  */
+
 public class DawgDS implements Serializable{
 
     private Node rootNode;
     private int nodeCount;
-    private ArrayList<Character> alphabet;
+//    private ArrayList<Character> alphabet;
 
     public DawgDS() {
 //        alphabet = new ArrayList<>();
@@ -27,11 +28,11 @@ public class DawgDS implements Serializable{
             nodeCount++;
             return;
         }
-        Character c = word.charAt(curr.getCharDepth());
-        if (curr.searchChildren(c) == null) {
-            curr.getChildren().add(new Node(curr, c));
+        char c = word.charAt(curr.getCharDepth());
+        if (curr.getChildren().get((int)c - (int)'a') == null) {
+            curr.getChildren().add((int)c - (int)'a', new Node(curr, c));
         }
-        addWord(word, curr.searchChildren(c));
+        addWord(word, curr.getChildren().get((int)c - (int)'a'));
     }
 
     public boolean checkWord(String word, Node curr) {
@@ -39,10 +40,10 @@ public class DawgDS implements Serializable{
             return curr.isWord();
         }
         Character c = word.charAt(curr.getCharDepth());
-        if (curr.searchChildren(c) == null) {
+        if (!curr.getChildren().contains(c) || curr.getChildren().get((int)c - (int)'a') == null) {
             return false;
         }
-        return checkWord(word, curr.searchChildren(c));
+        return checkWord(word, curr.getChildren().get((int)c - (int)'a'));
     }
 
 
@@ -63,11 +64,4 @@ public class DawgDS implements Serializable{
         this.nodeCount = nodeCount;
     }
 
-    public ArrayList<Character> getAlphabet() {
-        return alphabet;
-    }
-
-    public void setAlphabet(ArrayList<Character> alphabet) {
-        this.alphabet = alphabet;
-    }
 }
