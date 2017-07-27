@@ -93,10 +93,10 @@ public class DawgDS implements Serializable{
                         boolean removed = oneParent.removeChildNode(one.getValue());
                         oneParent.getChildren().add(two);
                         nodeCount--;
-                        indexBlacklist.add(l);
+                        indexBlacklist.add(j);
                         totalRemoved++;
-                        System.out.println("Running total Nodes Removed Count: " + totalRemoved);
-                        System.out.println("Removed for letter : " + two.getValue() + " and for the parent letters for one and two of: " + one.getParent().getValue() + ", " + two.getParent().getValue());
+                        System.out.println("Running total Nodes Removed Count: " + totalRemoved + ", currently on index " + i + ", with indexs blacklisted at: " + indexBlacklist.size());
+                        System.out.println("Removed for letter : "+ one.getValue() + ", "+ two.getValue() + " and for the parent letters for one and two of: " + one.getParent().getValue() + ", " + two.getParent().getValue());
                         cont = false;
                     }
                     l++;
