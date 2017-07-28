@@ -1,174 +1,99 @@
 package com.wordsearch;
 
-import com.wordsearch.DAWG.DawgDS;
 import com.wordsearch.DAWG.Node;
 
-import java.io.*;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Random;
 
 /**
- * Created by Nilay on 7/26/2017.
+ * Created by Nilay on 7/28/2017.
  */
 public class WordSearchUtil {
 
-    private static Node rootNode;
-    private static DawgDS dawg;
-    private static ArrayList<ArrayList<Node>> nodeEndings;
+    private char[][] board;
+    private List<Match> matches;
 
-    public static void main(String[] args) {
-        dawg = new DawgDS();
-        rootNode = dawg.getRootNode();
 
-        /** BENCHMAK LOAD DICTIOARY
-        long startTime = System.currentTimeMillis();
-        loadDictionary();
-        long endTime = System.currentTimeMillis();
-        long duration = (endTime - startTime);
-        System.out.println("DURATION: " + (float) duration /1000 + " seconds");
-        System.out.println("******************* LOADED NEW DICTIONARY *****************");
-         **/
-
-        System.out.println("DAWG Node count: " + dawg.getNodeCount());
-
-        /** BENCHMAK LOAD DICTIOARY
-         System.out.println("**********************************************************************");
-         System.out.println("**************** Starting Optimization of Structure *******************");
-         System.out.println("**********************************************************************");
-        long startTime = System.currentTimeMillis();
-        dawg.optimize();
-        long endTime = System.currentTimeMillis();
-        long duration = (endTime - startTime);
-        System.out.println("DURATION: " + (float) duration /1000 + " seconds");
-        System.out.println("*********************** Optimized Structure **************************");
-        System.out.println("DAWG Node count After Optimization: " + dawg.getNodeCount());
-        **/
-
-        dawg = deserializeDawgGZ();
-
-        checkDictionary();
-//        serializeDawg();
-//        serializeDawgGZ();
-
+    public WordSearchUtil(char[][] board) {
+        this.board = board;
+        matches = new ArrayList<>();
     }
 
-    public static void loadDictionary() {
-        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/dict.txt"))) {
-            nodeEndings = new ArrayList<ArrayList<Node>>(15);
-            for(int i = 0; i < 15; i++) {
-                nodeEndings.add(i, new ArrayList<>());
-            }
-            String word;
-            while ((word = br.readLine()) != null) {
-                dawg.addWord(word, rootNode);
-                System.out.println("added " + word);
-            }
-            int runningNodeCount = 0;
-            for(int i = 0; i < 15; i++) {
-                System.out.println("For index " + i + " for each arraylist, there are " + nodeEndings.get(i).size() + " end nodes");
-                runningNodeCount += nodeEndings.get(i).size();
-            }
-            System.out.println("Running Node Count: " + runningNodeCount);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public WordSearchUtil() {
+        this.board = new char[5][5];
+        matches = new ArrayList<>();
     }
 
-    public static void checkDictionary() {
-        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/dict.txt"))) {
-            String word;
-            int trueResults = 0;
-            int falseResults = 0;
-            while ((word = br.readLine()) != null) {
-                boolean check = dawg.checkWord(word, rootNode);
-                if (check) {
-                    trueResults++;
-                } else if (!check) {
-                    falseResults++;
+    public void solveWordSearch() {
+        Node rootNode = WordSearch.getRootNode();
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[i].length; j++) {
+                ArrayList<Match> tempMatches = new ArrayList<>();
+                if(i > 1) {
+                    Character c = board[i][j];
+                    System.out.println(c + " at row: " + i + " and col: " + j);
+                    tempMatches = searchUp(c, rootNode.getChildNode(board[i][j]),new Coordinate(i, j), new Coordinate(i, j), c.toString() , tempMatches);
+                    if (tempMatches.size() != 0) {
+                        matches.add(tempMatches.get(tempMatches.size() - 1));
+                    }
                 }
             }
-            System.out.println("True Results from dictionary: " + trueResults);
-            System.out.println("False Results from dictionary: " + falseResults);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+        System.out.println(matches.size());
+        for(Match each: matches) {
+            System.out.println(each.getWord());
         }
     }
 
-
-    public static DawgDS deserializeDawg() {
-        DawgDS dawgDeserialized = new DawgDS();
-        try {
-            FileInputStream fileIn = new FileInputStream("dawgOptimized.ser");
-            ObjectInputStream in = new ObjectInputStream(fileIn);
-            dawgDeserialized = (DawgDS) in.readObject();
-            in.close();
-            fileIn.close();
-        }catch(IOException i) {
-            i.printStackTrace();
-            return null;
-        }catch(ClassNotFoundException c) {
-            System.out.println("DawgDS class not found");
-            c.printStackTrace();
-            return null;
+    public ArrayList<Match> searchUp(Character c, Node node, Coordinate start, Coordinate curCoord, String word, ArrayList<Match> tempMatches) {
+        if(node.isWord()) {
+            tempMatches.add(new Match(start.getRow(), start.getCol(), curCoord.getRow(), curCoord.getCol(), word));
+            System.out.println("Word added: " + word);
         }
-        return dawgDeserialized;
+        if (curCoord.getRow() == 0) {
+            return tempMatches;
+        }
+        Character nextChar = board[curCoord.goUp()][curCoord.getCol()];
+        System.out.println("NextCar Up: " + nextChar);
+        Node nextNode = node.getChildNode(nextChar);
+        if(nextNode == null || !nextNode.getValue().equals(nextChar)) {
+            return tempMatches;
+        }
+        word = word + nextChar.toString();
+//        word.concat(nextChar.toString());
+        return searchUp(nextChar, nextNode, start, new Coordinate(curCoord.goUp(), curCoord.getCol()), word, tempMatches);
     }
 
-    public static DawgDS deserializeDawgGZ() {
-        DawgDS dawgDeserialized = new DawgDS();
-        try {
-            FileInputStream fileIn = new FileInputStream("dawgOptimized.gz");
-            GZIPInputStream gz = new GZIPInputStream(fileIn);
-            ObjectInputStream in = new ObjectInputStream(gz);
-            dawgDeserialized = (DawgDS) in.readObject();
-            in.close();
-            fileIn.close();
-        }catch(IOException i) {
-            i.printStackTrace();
-            return null;
-        }catch(ClassNotFoundException c) {
-            System.out.println("DawgDS class not found");
-            c.printStackTrace();
-            return null;
+    public void populateBoardRandom() {
+        ArrayList<Character> alphabet = new ArrayList<>();
+        for (int i = 0; i < 26; i++) {
+            alphabet.add((char)((int)'a' + i));
         }
-        return dawgDeserialized;
+        Random rand = new Random();
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[i].length; j++) {
+                board[i][j] = alphabet.get(rand.nextInt(alphabet.size()));
+            }
+        }
+        board[3][0] = 'c';
+        board[2][0] = 'a';
+        board[1][0] = 'r';
+        board[0][0] = 't';
+        this.printBoard();
     }
 
-    public static void serializeDawgGZ(){
-        try{
-            FileOutputStream fos = new FileOutputStream("dawgOptimized.gz");
-            GZIPOutputStream gz = new GZIPOutputStream(fos);
-            ObjectOutputStream oos = new ObjectOutputStream(gz);
-            oos.writeObject(dawg);
-            oos.close();
-            System.out.println("Done");
-        }catch(Exception ex){
-            ex.printStackTrace();
+    public void printBoard() {
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[i].length; j++) {
+                System.out.print(board[i][j] + " ");
+            }
+            System.out.println();
         }
     }
 
-
-
-    public static void serializeDawg() {
-        try {
-            FileOutputStream fileOut =
-                    new FileOutputStream("dawgOptimized.ser");
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(dawg);
-            out.close();
-            fileOut.close();
-            System.out.println("Serialized data is saved to dawgOptimized.ser");
-        }catch(IOException i) {
-            i.printStackTrace();
-        }
-    }
-
-    public static ArrayList<ArrayList<Node>> getNodeEndings() {
-        return nodeEndings;
+    public void addMatch(int startRow, int startCol, int endRow, int endCol, String word) {
+        matches.add(new Match(startRow, startCol,  endRow, endCol, word));
     }
 }

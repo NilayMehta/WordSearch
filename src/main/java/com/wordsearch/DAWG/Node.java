@@ -1,7 +1,9 @@
 package com.wordsearch.DAWG;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Created by Nilay on 7/26/2017.
@@ -29,54 +31,6 @@ public class Node implements Serializable{
         this.isWord = false;
         this.childrenCount = 0;
         charDepth = (parent == null) ? 0 : parent.charDepth + 1;
-    }
-
-    public Node getParent() {
-        return parent;
-    }
-
-    public void setParent(Node parent) {
-        this.parent = parent;
-    }
-
-    public Character getValue() {
-        return value;
-    }
-
-    public void setValue(Character value) {
-        this.value = value;
-    }
-
-    public boolean isWord() {
-        return isWord;
-    }
-
-    public void setWord(boolean word) {
-        isWord = word;
-    }
-
-    public List<Node> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<Node> children) {
-        this.children = children;
-    }
-
-    public int getChildrenCount() {
-        return childrenCount;
-    }
-
-    public void setChildrenCount(int childrenCount) {
-        this.childrenCount = childrenCount;
-    }
-
-    public int getCharDepth() {
-        return charDepth;
-    }
-
-    public void setCharDepth(int charDepth) {
-        this.charDepth = charDepth;
     }
 
     public Node getChildNode(Character c) {
@@ -126,5 +80,51 @@ public class Node implements Serializable{
         return result;
     }
 
+    public Node getParent() {
+        return parent;
+    }
 
+    public void setParent(Node parent) {
+        this.parent = parent;
+    }
+
+    public Character getValue() {
+        return value;
+    }
+
+    public void setValue(Character value) {
+        this.value = value;
+    }
+
+    public boolean isWord() {
+        return isWord;
+    }
+
+    public void setWord(boolean word) {
+        isWord = word;
+    }
+
+    public List<Node> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Node> children) {
+        this.children = children;
+    }
+
+    public int getChildrenCount() {
+        return childrenCount;
+    }
+
+    public void setChildrenCount(int childrenCount) {
+        this.childrenCount = childrenCount;
+    }
+
+    public int getCharDepth() {
+        return charDepth;
+    }
+
+    public void setCharDepth(int charDepth) {
+        this.charDepth = charDepth;
+    }
 }
